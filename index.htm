@@ -115,7 +115,7 @@
     </div>
 
     <div class="input-group">
-      <label for="r">Annual Interest Rate (%)</label>
+      <label for="r">Annual Interest Rate  for the Loan(%)</label>
       <input type="number" step="0.01" id="r" placeholder="Enter annual interest rate (in %)" required>
     </div>
 
@@ -169,7 +169,7 @@
 
       // Collect input values
       const P = parseFloat(document.getElementById('P').value);
-      const r = parseFloat(document.getElementById('r').value) ;
+      const r = parseFloat(document.getElementById('r').value)/100 ;
       const T = parseInt(document.getElementById('T').value); // Loan tenure in years
       const Rent = parseFloat(document.getElementById('Rent').value);
       const SellingPrice = parseFloat(document.getElementById('SellingPrice').value);
