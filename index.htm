@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Financial Profit Calculator</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     /* General Styles */
     body {
@@ -17,6 +18,7 @@
       align-items: center;
       height: 100vh;
       box-sizing: border-box;
+      flex-direction: column;
     }
 
     .container {
@@ -102,6 +104,11 @@
       100% { transform: rotate(360deg); }
     }
 
+    canvas {
+      width: 80%;
+      max-width: 600px;
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body>
@@ -115,7 +122,7 @@
     </div>
 
     <div class="input-group">
-      <label for="r">Annual Interest Rate  for the Loan(%)</label>
+      <label for="r">Annual Interest Rate for the Loan(%)</label>
       <input type="number" step="0.01" id="r" placeholder="Enter annual interest rate (in %)" required>
     </div>
 
@@ -160,6 +167,8 @@
     </div>
   </div>
 
+  <canvas id="profitChart"></canvas>
+
   <script>
     // Function to call the API and calculate results
     async function calculateProfit() {
@@ -169,7 +178,7 @@
 
       // Collect input values
       const P = parseFloat(document.getElementById('P').value);
-      const r = parseFloat(document.getElementById('r').value)/100 ;
+      const r = parseFloat(document.getElementById('r').value) / 100;
       const T = parseInt(document.getElementById('T').value); // Loan tenure in years
       const Rent = parseFloat(document.getElementById('Rent').value);
       const SellingPrice = parseFloat(document.getElementById('SellingPrice').value);
@@ -214,6 +223,70 @@
       document.getElementById('profitSellingResult').innerText = data.ProfitFromSelling;
       document.getElementById('profitFDResult').innerText = data.ProfitFromFD;
       document.getElementById('profitDifferenceResult').innerText = data.ProfitDifference;
+
+      // Call the API for each year to get profit data for the graph
+      await createGraph(T, P, r, Rent, SellingPrice, FDRate);
+    }
+
+    // Function to create the chart
+    async function createGraph(T, P, r, Rent, SellingPrice, FDRate) {
+      let years = [];
+      let profitFromSelling = [];
+      let profitFromFD = [];
+      let profitDifference = [];
+
+      for (let i = 1; i <= T; i++) {
+        const response = await fetch('https://polished-frost-8d49.karankhosla99.workers.dev/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ P, r, N: i * 12, T, Rent, SellingPrice, FDRate })
+        });
+
+        const data = await response.json();
+        years.push(i);
+        profitFromSelling.push(data.ProfitFromSelling);
+        profitFromFD.push(data.ProfitFromFD);
+        profitDifference.push(data.ProfitDifference);
+      }
+
+      const ctx = document.getElementById('profitChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: years,
+          datasets: [
+            {
+              label: 'Profit from Selling',
+              data: profitFromSelling,
+              backgroundColor: 'rgba(54, 162, 235, 0.6)', // Blue
+            },
+            {
+              label: 'Profit from FD',
+              data: profitFromFD,
+              backgroundColor: 'rgba(75, 192, 192, 0.6)', // Green
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          },
+          plugins: {
+            tooltip: {
+              callbacks: {
+                afterBody: function(tooltipItem) {
+                  const year = tooltipItem[0].label;
+                  const diff = profitDifference[year - 1];
+                  return 'Profit Difference: ₹' + diff;
+                }
+              }
+            }
+          }
+        }
+      });
     }
   </script>
 
