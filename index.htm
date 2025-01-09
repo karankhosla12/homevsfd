@@ -188,7 +188,7 @@
         }
 
         // Remove any extra spaces at the end and return the result
-        return result.trim();
+        return result.trim().replace(/\s+/g, ' '); // Remove excess spaces
     }
 
     // Function to call the API and calculate results
