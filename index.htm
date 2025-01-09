@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Financial Calculator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    /* General Styles */
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f7fc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      box-sizing: border-box;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 600px;
+      background-color: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    .input-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    label {
+      font-size: 16px;
+      font-weight: 600;
+      display: block;
+      margin-bottom: 8px;
+      color: #555;
+    }
+
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .loading {
+      display: none;
+      animation: spin 1s linear infinite;
+    }
+
+    .result {
+      display: none;
+      margin-top: 20px;
+      background-color: #f8f9fa;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .result p {
+      font-size: 18px;
+      margin: 10px 0;
+      color: #333;
+    }
+
+    .result h2 {
+      font-size: 22px;
+      margin-bottom: 10px;
+      color: #007bff;
+    }
+
+    /* Loading Animation */
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Financial Profit Calculator</h1>
+
+    <div class="input-group">
+      <label for="P">Principal Loan Amount (₹)</label>
+      <input type="number" id="P" placeholder="Enter principal loan amount" required>
+    </div>
+
+    <div class="input-group">
+      <label for="r">Annual Interest Rate (%)</label>
+      <input type="number" step="0.01" id="r" placeholder="Enter annual interest rate" required>
+    </div>
+
+    <div class="input-group">
+      <label for="N">Loan Tenure (Months)</label>
+      <input type="number" id="N" placeholder="Enter loan tenure in months" required>
+    </div>
+
+    <div class="input-group">
+      <label for="T">Fixed Deposit Tenure (Years)</label>
+      <input type="number" id="T" placeholder="Enter FD tenure in years" required>
+    </div>
+
+    <div class="input-group">
+      <label for="Rent">Rent from Property (₹)</label>
+      <input type="number" id="Rent" placeholder="Enter monthly rent" required>
+    </div>
+
+    <div class="input-group">
+      <label for="SellingPrice">Expected Selling Price (₹)</label>
+      <input type="number" id="SellingPrice" placeholder="Enter expected selling price" required>
+    </div>
+
+    <button onclick="calculateProfit()">Calculate</button>
+
+    <div class="loading">
+      <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 50 50">
+        <circle cx="25" cy="25" r="20" stroke="#4CAF50" stroke-width="5" fill="none"></circle>
+      </svg>
+    </div>
+
+    <div class="result">
+      <h2>Calculation Results</h2>
+      <p><strong>EMI:</strong> ₹<span id="emiResult"></span></p>
+      <p><strong>Total Payment:</strong> ₹<span id="totalPaymentResult"></span></p>
+      <p><strong>Total Interest Paid:</strong> ₹<span id="totalInterestResult"></span></p>
+      <p><strong>Net EMI:</strong> ₹<span id="netEmiResult"></span></p>
+      <p><strong>Total Cost of the House:</strong> ₹<span id="totalCostResult"></span></p>
+      <p><strong>Profit from Selling:</strong> ₹<span id="profitSellingResult"></span></p>
+      <p><strong>Profit from FD:</strong> ₹<span id="profitFDResult"></span></p>
+      <p><strong>Difference in Profit:</strong> ₹<span id="profitDifferenceResult"></span></p>
+    </div>
+  </div>
+
+  <script>
+    // Function to call the API and calculate results
+    async function calculateProfit() {
+      // Show loading animation
+      document.querySelector('.loading').style.display = 'block';
+      document.querySelector('.result').style.display = 'none';
+
+      // Collect input values
+      const P = document.getElementById('P').value;
+      const r = document.getElementById('r').value / 100; // Convert to decimal
+      const N = document.getElementById('N').value;
+      const T = document.getElementById('T').value;
+      const Rent = document.getElementById('Rent').value;
+      const SellingPrice = document.getElementById('SellingPrice').value;
+
+      // Validate inputs
+      if (!P || !r || !N || !T || !Rent || !SellingPrice) {
+        alert('Please fill in all fields.');
+        document.querySelector('.loading').style.display = 'none';
+        return;
+      }
+
+      // Prepare the API request
+      const response = await fetch('https://polished-frost-8d49.karankhosla99.workers.dev/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ P, r, N, T, Rent, SellingPrice })
+      });
+
+      const data = await response.json();
+
+      // Hide loading animation and show results
+      document.querySelector('.loading').style.display = 'none';
+      document.querySelector('.result').style.display = 'block';
+
+      // Update the result fields with the API response
+      document.getElementById('emiResult').innerText = data.EMI;
+      document.getElementById('totalPaymentResult').innerText = data.TotalPayment;
+      document.getElementById('totalInterestResult').innerText = data.TotalInterestPaid;
+      document.getElementById('netEmiResult').innerText = data.NetEMI;
+      document.getElementById('totalCostResult').innerText = data.TotalCostOfHouse;
+      document.getElementById('profitSellingResult').innerText = data.ProfitFromSelling;
+      document.getElementById('profitFDResult').innerText = data.ProfitFromFD;
+      document.getElementById('profitDifferenceResult').innerText = data.ProfitDifference;
+    }
+  </script>
+
+</body>
+</html>
