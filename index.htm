@@ -144,53 +144,18 @@
 
     <div class="result">
       <h2>Calculation Results</h2>
-      <p><strong>EMI:</strong> ₹<span id="emiResult"></span> (₹ <span id="emiResultInWords"></span>)</p>
-      <p><strong>Total Payment:</strong> ₹<span id="totalPaymentResult"></span> (₹ <span id="totalPaymentInWords"></span>)</p>
-      <p><strong>Total Interest Paid:</strong> ₹<span id="totalInterestResult"></span> (₹ <span id="totalInterestInWords"></span>)</p>
-      <p><strong>Net EMI:</strong> ₹<span id="netEmiResult"></span> (₹ <span id="netEmiInWords"></span>)</p>
-      <p><strong>Total Cost of the House:</strong> ₹<span id="totalCostResult"></span> (₹ <span id="totalCostInWords"></span>)</p>
-      <p><strong>Profit from Selling the House:</strong> ₹<span id="profitSellingResult"></span> (₹ <span id="profitSellingInWords"></span>)</p>
-      <p><strong>Profit from FD:</strong> ₹<span id="profitFDResult"></span> (₹ <span id="profitFDInWords"></span>)</p>
-      <p><strong>Profit Difference (Selling - FD):</strong> ₹<span id="profitDifferenceResult"></span> (₹ <span id="profitDifferenceInWords"></span>)</p>
+      <p><strong>EMI:</strong> ₹<span id="emiResult"></span></p>
+      <p><strong>Total Payment:</strong> ₹<span id="totalPaymentResult"></span></p>
+      <p><strong>Total Interest Paid:</strong> ₹<span id="totalInterestResult"></span></p>
+      <p><strong>Net EMI:</strong> ₹<span id="netEmiResult"></span></p>
+      <p><strong>Total Cost of the House:</strong> ₹<span id="totalCostResult"></span></p>
+      <p><strong>Profit from Selling the House:</strong> ₹<span id="profitSellingResult"></span></p>
+      <p><strong>Profit from FD:</strong> ₹<span id="profitFDResult"></span></p>
+      <p><strong>Profit Difference (Selling - FD):</strong> ₹<span id="profitDifferenceResult"></span></p>
     </div>
   </div>
 
   <script>
-    // Convert number to words (Indian numbering system)
-    function convertNumberToWords(num) {
-        // Remove decimals, as we only want the integer part
-        num = Math.floor(num);
-
-        const ones = [
-            "", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten",
-            "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"
-        ];
-        const tens = [
-            "", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"
-        ];
-        const thousands = ["", "Thousand", "Lakh", "Crore"];
-
-        if (num === 0) return "Zero";
-
-        let result = "";
-        let i = 0;
-
-        // Breaking the number into groups of 2 digits
-        while (num > 0) {
-            if (num % 100 < 20) {
-                result = ones[num % 100] + " " + thousands[i] + " " + result;
-                num = Math.floor(num / 100);
-            } else {
-                result = tens[Math.floor((num % 100) / 10)] + " " + ones[num % 10] + " " + thousands[i] + " " + result;
-                num = Math.floor(num / 100);
-            }
-            i++;
-        }
-
-        // Remove any extra spaces at the end and return the result
-        return result.trim().replace(/\s+/g, ' '); // Remove excess spaces
-    }
-
     // Function to call the API and calculate results
     async function calculateProfit() {
       // Show loading animation
@@ -229,28 +194,13 @@
 
       // Update the result fields with the API response
       document.getElementById('emiResult').innerText = data.EMI;
-      document.getElementById('emiResultInWords').innerText = convertNumberToWords(data.EMI);
-
       document.getElementById('totalPaymentResult').innerText = data.TotalPayment;
-      document.getElementById('totalPaymentInWords').innerText = convertNumberToWords(data.TotalPayment);
-
       document.getElementById('totalInterestResult').innerText = data.TotalInterestPaid;
-      document.getElementById('totalInterestInWords').innerText = convertNumberToWords(data.TotalInterestPaid);
-
       document.getElementById('netEmiResult').innerText = data.NetEMI;
-      document.getElementById('netEmiInWords').innerText = convertNumberToWords(data.NetEMI);
-
       document.getElementById('totalCostResult').innerText = data.TotalCostOfHouse;
-      document.getElementById('totalCostInWords').innerText = convertNumberToWords(data.TotalCostOfHouse);
-
       document.getElementById('profitSellingResult').innerText = data.ProfitFromSelling;
-      document.getElementById('profitSellingInWords').innerText = convertNumberToWords(data.ProfitFromSelling);
-
       document.getElementById('profitFDResult').innerText = data.ProfitFromFD;
-      document.getElementById('profitFDInWords').innerText = convertNumberToWords(data.ProfitFromFD);
-
       document.getElementById('profitDifferenceResult').innerText = data.ProfitDifference;
-      document.getElementById('profitDifferenceInWords').innerText = convertNumberToWords(data.ProfitDifference);
     }
   </script>
 
