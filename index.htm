@@ -134,6 +134,11 @@
       <input type="number" id="SellingPrice" placeholder="Enter expected selling price" required>
     </div>
 
+    <div class="input-group">
+      <label for="FDRate">Fixed Deposit Rate (%)</label>
+      <input type="number" step="0.01" id="FDRate" placeholder="Enter FD rate" required>
+    </div>
+
     <button onclick="calculateProfit()">Calculate</button>
 
     <div class="loading">
@@ -168,9 +173,10 @@
       const T = document.getElementById('T').value; // Loan tenure in years
       const Rent = document.getElementById('Rent').value;
       const SellingPrice = document.getElementById('SellingPrice').value;
+      const FDRate = document.getElementById('FDRate').value / 100; // Convert to decimal
 
       // Validate inputs
-      if (!P || !r || !T || !Rent || !SellingPrice) {
+      if (!P || !r || !T || !Rent || !SellingPrice || !FDRate) {
         alert('Please fill in all fields.');
         document.querySelector('.loading').style.display = 'none';
         return;
@@ -183,7 +189,7 @@
       const response = await fetch('https://polished-frost-8d49.karankhosla99.workers.dev/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ P, r, N, T, Rent, SellingPrice })
+        body: JSON.stringify({ P, r, N, T, Rent, SellingPrice, FDRate })
       });
 
       const data = await response.json();
