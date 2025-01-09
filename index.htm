@@ -297,7 +297,7 @@
         const response = await fetch('https://polished-frost-8d49.karankhosla99.workers.dev/', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ P, r, N: i * 12, T, Rent, SellingPrice, FDRate })
+          body: JSON.stringify({ P, r, N: i * 12, i, Rent, SellingPrice, FDRate })
         });
 
         const data = await response.json();
