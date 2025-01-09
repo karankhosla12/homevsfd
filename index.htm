@@ -156,37 +156,39 @@
   </div>
 
   <script>
-    // Convert number to words
+    // Convert number to words (Indian numbering system)
     function convertNumberToWords(num) {
-      // Ensure we are only dealing with the integer part of the number
-      num = Math.floor(num);  // Remove decimal part
+        // Remove decimals, as we only want the integer part
+        num = Math.floor(num);
 
-      const ones = [
-        "", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten",
-        "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"
-      ];
-      const tens = [
-        "", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"
-      ];
-      const thousands = ["", "Thousand", "Lakh", "Crore"];
+        const ones = [
+            "", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten",
+            "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"
+        ];
+        const tens = [
+            "", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"
+        ];
+        const thousands = ["", "Thousand", "Lakh", "Crore"];
 
-      if (num === 0) return "Zero";
+        if (num === 0) return "Zero";
 
-      let result = "";
-      let i = 0;
+        let result = "";
+        let i = 0;
 
-      while (num > 0) {
-        if (num % 100 < 20) {
-          result = ones[num % 100] + " " + thousands[i] + " " + result;
-          num = Math.floor(num / 100);
-        } else {
-          result = tens[Math.floor((num % 100) / 10)] + " " + ones[num % 10] + " " + thousands[i] + " " + result;
-          num = Math.floor(num / 100);
+        // Breaking the number into groups of 2 digits
+        while (num > 0) {
+            if (num % 100 < 20) {
+                result = ones[num % 100] + " " + thousands[i] + " " + result;
+                num = Math.floor(num / 100);
+            } else {
+                result = tens[Math.floor((num % 100) / 10)] + " " + ones[num % 10] + " " + thousands[i] + " " + result;
+                num = Math.floor(num / 100);
+            }
+            i++;
         }
-        i++;
-      }
 
-      return result.trim();
+        // Remove any extra spaces at the end and return the result
+        return result.trim();
     }
 
     // Function to call the API and calculate results
