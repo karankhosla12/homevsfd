@@ -116,7 +116,7 @@
 
     <div class="input-group">
       <label for="r">Annual Interest Rate (%)</label>
-      <input type="number" step="0.01" id="r" placeholder="Enter annual interest rate" required>
+      <input type="number" step="0.01" id="r" placeholder="Enter annual interest rate (in %)" required>
     </div>
 
     <div class="input-group">
@@ -136,7 +136,7 @@
 
     <div class="input-group">
       <label for="FDRate">Fixed Deposit Rate (%)</label>
-      <input type="number" step="0.01" id="FDRate" placeholder="Enter FD rate" required>
+      <input type="number" step="0.01" id="FDRate" placeholder="Enter FD rate (in %)" required>
     </div>
 
     <button onclick="calculateProfit()">Calculate</button>
@@ -168,16 +168,16 @@
       document.querySelector('.result').style.display = 'none';
 
       // Collect input values
-      const P = document.getElementById('P').value;
-      const r = document.getElementById('r').value ;
-      const T = document.getElementById('T').value; // Loan tenure in years
-      const Rent = document.getElementById('Rent').value;
-      const SellingPrice = document.getElementById('SellingPrice').value;
-      const FDRate = document.getElementById('FDRate').value;
+      const P = parseFloat(document.getElementById('P').value);
+      const r = parseFloat(document.getElementById('r').value) ;
+      const T = parseInt(document.getElementById('T').value); // Loan tenure in years
+      const Rent = parseFloat(document.getElementById('Rent').value);
+      const SellingPrice = parseFloat(document.getElementById('SellingPrice').value);
+      const FDRate = parseFloat(document.getElementById('FDRate').value);
 
       // Validate inputs
-      if (!P || !r || !T || !Rent || !SellingPrice || !FDRate) {
-        alert('Please fill in all fields.');
+      if (isNaN(P) || isNaN(r) || isNaN(T) || isNaN(Rent) || isNaN(SellingPrice) || isNaN(FDRate)) {
+        alert('Please fill in all fields with valid numbers.');
         document.querySelector('.loading').style.display = 'none';
         return;
       }
@@ -193,6 +193,13 @@
       });
 
       const data = await response.json();
+
+      // Check if the response contains valid values
+      if (!data || isNaN(data.ProfitFromFD) || isNaN(data.ProfitFromSelling) || isNaN(data.ProfitDifference)) {
+        alert('There was an error with the calculation.');
+        document.querySelector('.loading').style.display = 'none';
+        return;
+      }
 
       // Hide loading animation and show results
       document.querySelector('.loading').style.display = 'none';
