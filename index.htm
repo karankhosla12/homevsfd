@@ -155,7 +155,102 @@
     </div>
   </div>
 
-  <script src="script.js"></script>
+  <script>
+    // Convert number to words
+    function convertNumberToWords(num) {
+      // Ensure we are only dealing with the integer part of the number
+      num = Math.floor(num);  // Remove decimal part
+
+      const ones = [
+        "", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten",
+        "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"
+      ];
+      const tens = [
+        "", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"
+      ];
+      const thousands = ["", "Thousand", "Lakh", "Crore"];
+
+      if (num === 0) return "Zero";
+
+      let result = "";
+      let i = 0;
+
+      while (num > 0) {
+        if (num % 100 < 20) {
+          result = ones[num % 100] + " " + thousands[i] + " " + result;
+          num = Math.floor(num / 100);
+        } else {
+          result = tens[Math.floor((num % 100) / 10)] + " " + ones[num % 10] + " " + thousands[i] + " " + result;
+          num = Math.floor(num / 100);
+        }
+        i++;
+      }
+
+      return result.trim();
+    }
+
+    // Function to call the API and calculate results
+    async function calculateProfit() {
+      // Show loading animation
+      document.querySelector('.loading').style.display = 'block';
+      document.querySelector('.result').style.display = 'none';
+
+      // Collect input values
+      const P = document.getElementById('P').value;
+      const r = document.getElementById('r').value / 100; // Convert to decimal
+      const T = document.getElementById('T').value; // Loan tenure in years
+      const Rent = document.getElementById('Rent').value;
+      const SellingPrice = document.getElementById('SellingPrice').value;
+
+      // Validate inputs
+      if (!P || !r || !T || !Rent || !SellingPrice) {
+        alert('Please fill in all fields.');
+        document.querySelector('.loading').style.display = 'none';
+        return;
+      }
+
+      // Convert tenure from years to months
+      const N = T * 12; // Convert loan tenure to months
+
+      // Prepare the API request
+      const response = await fetch('https://polished-frost-8d49.karankhosla99.workers.dev/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ P, r, N, T, Rent, SellingPrice })
+      });
+
+      const data = await response.json();
+
+      // Hide loading animation and show results
+      document.querySelector('.loading').style.display = 'none';
+      document.querySelector('.result').style.display = 'block';
+
+      // Update the result fields with the API response
+      document.getElementById('emiResult').innerText = data.EMI;
+      document.getElementById('emiResultInWords').innerText = convertNumberToWords(data.EMI);
+
+      document.getElementById('totalPaymentResult').innerText = data.TotalPayment;
+      document.getElementById('totalPaymentInWords').innerText = convertNumberToWords(data.TotalPayment);
+
+      document.getElementById('totalInterestResult').innerText = data.TotalInterestPaid;
+      document.getElementById('totalInterestInWords').innerText = convertNumberToWords(data.TotalInterestPaid);
+
+      document.getElementById('netEmiResult').innerText = data.NetEMI;
+      document.getElementById('netEmiInWords').innerText = convertNumberToWords(data.NetEMI);
+
+      document.getElementById('totalCostResult').innerText = data.TotalCostOfHouse;
+      document.getElementById('totalCostInWords').innerText = convertNumberToWords(data.TotalCostOfHouse);
+
+      document.getElementById('profitSellingResult').innerText = data.ProfitFromSelling;
+      document.getElementById('profitSellingInWords').innerText = convertNumberToWords(data.ProfitFromSelling);
+
+      document.getElementById('profitFDResult').innerText = data.ProfitFromFD;
+      document.getElementById('profitFDInWords').innerText = convertNumberToWords(data.ProfitFromFD);
+
+      document.getElementById('profitDifferenceResult').innerText = data.ProfitDifference;
+      document.getElementById('profitDifferenceInWords').innerText = convertNumberToWords(data.ProfitDifference);
+    }
+  </script>
 
 </body>
 </html>
